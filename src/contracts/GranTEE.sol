@@ -13,7 +13,7 @@ contract GranTEE {
     }
 
     // Because Scholarship contains an internal mapping, we store them in a mapping keyed by an auto-incremented ID.
-    mapping(uint => Scholarship) private scholarships;
+    mapping(uint => Scholarship) public scholarships;
 
     // Each application stores if the student applied, if they've been paid, and data hash of any details they provided.
     struct Application {

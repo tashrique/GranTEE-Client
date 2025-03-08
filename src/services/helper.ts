@@ -69,10 +69,12 @@ export async function getScholarships(): Promise<Scholarship[]> {
           id: resp.scholarshipId+"",
           title: "",
           description: "",
-          maxAmountPerApplicant: Number(resp.balance),
+          maxAmountPerApplicant: 0,
           deadline: "",
           applicants: 0,
+          balance: Number(resp.balance),
           requirements: [],
+          creator: resp.creator,
         });
       });
     return processedScholarships;
@@ -86,13 +88,31 @@ export async function getScholarshipsByCreator(creator: string): Promise<Scholar
           id: resp.scholarshipId+"",
           title: "",
           description: "",
-          maxAmountPerApplicant: Number(resp.balance),
+          maxAmountPerApplicant: 0,
           deadline: "",
           applicants: 0,
+          balance: Number(resp.balance),
           requirements: [],
+          creator: resp.creator,
         });
       });
     return processedScholarships;
+}
+
+export async function getScholarshipById(scholarshipId: number): Promise<Scholarship> {
+    const scholarshipResp: ScholarshipResp = await granTEEContract.getScholarshipById(scholarshipId);
+    const scholarship: Scholarship = {
+        id: scholarshipResp.scholarshipId+"",
+        creator: scholarshipResp.creator,
+        title: "",
+        description: "",
+        maxAmountPerApplicant: 0,
+        deadline: "",
+        applicants: 0,
+        balance: Number(scholarshipResp.balance),
+        requirements: [],
+    };
+    return scholarship;
 }
 
 export async function createScholarship(): Promise<void> {
