@@ -13,6 +13,8 @@ const CreateScholarship: React.FC = () => {
     deadline: '',
     applicants: 0,
     requirements: [],
+    balance: 0,
+    creator: account||"",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,6 +64,8 @@ const CreateScholarship: React.FC = () => {
         deadline: '',
         applicants: 0,
         requirements: [],
+        balance: 0,
+        creator: account||"",
     });
 
     try{

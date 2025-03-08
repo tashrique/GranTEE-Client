@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useWeb3 } from '../Web3Context';
 import { getScholarships } from '../services/helper';
-import { Clock, Users, DollarSign } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { Scholarship } from '../types';
 
 export function Scholarships() {
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const { account } = useWeb3();
-  
+
   useEffect(() => {
     fetchScholarships();
   },
@@ -46,13 +46,20 @@ export function Scholarships() {
                   {scholarship.title}
                 </h2>
                 <div className="flex items-center space-x-4 text-gray-600 mb-4">
+                  By: ${scholarship.creator}
+                </div>
+                <div className="flex items-center space-x-4 text-gray-600 mb-4">
                   <div className="flex items-center">
-                    <DollarSign className="h-5 w-5 mr-1" />
-                    ${scholarship.maxAmountPerApplicant.toLocaleString()}
+                      Max grant: {scholarship.maxAmountPerApplicant.toLocaleString()} Wei
                   </div>
                   <div className="flex items-center">
-                    <Clock className="h-5 w-5 mr-1" />
-                    {new Date(scholarship.deadline).toLocaleDateString()}
+                      Balance: {scholarship.balance.toLocaleString()} Wei
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4 text-gray-600 mb-4">
+                  <div className="flex items-center">
+                      <Clock className="h-5 w-5 mr-1" />
+                      {new Date(scholarship.deadline).toLocaleDateString()}
                   </div>
                   <div className="flex items-center">
                     <Users className="h-5 w-5 mr-1" />

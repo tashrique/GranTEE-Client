@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWeb3 } from '../Web3Context';
-import { Clock, Users, DollarSign } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { 
    
   getScholarshipsByCreator, 
-  deleteScholarship 
+  deleteScholarship, 
 } from '../services/helper';
 import { Scholarship } from '../types';
+import { AddFundsModal } from '../components/AddFundsModal';
 
 const ManageScholarships: React.FC = () => {
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { account } = useWeb3();
+  const [fundsModalScholarshipId, setFundsModalScholarshipId] = useState<string | null>(null);
 
   const fetchScholarships = async () => {
     setLoading(true);
@@ -31,6 +33,10 @@ const ManageScholarships: React.FC = () => {
   useEffect(() => {
     fetchScholarships();
   }, [account]);
+
+  const handleOpenFundsModal = (scholarshipId: string) => {
+    setFundsModalScholarshipId(scholarshipId);
+  };
 
   const handleDelete = async (scholarshipId: string) => {
     if (!window.confirm('Are you sure you want to delete this scholarship?')) return;
@@ -77,18 +83,22 @@ const ManageScholarships: React.FC = () => {
                     </h2>
                     <div className="flex items-center space-x-4 text-gray-600 mb-4">
                     <div className="flex items-center">
-                        <DollarSign className="h-5 w-5 mr-1" />
-                        ${scholarship.maxAmountPerApplicant.toLocaleString()}
+                        Max grant: {scholarship.maxAmountPerApplicant.toLocaleString()} Wei
                     </div>
                     <div className="flex items-center">
-                        <Clock className="h-5 w-5 mr-1" />
-                        {new Date(scholarship.deadline).toLocaleDateString()}
-                    </div>
-                    <div className="flex items-center">
-                        <Users className="h-5 w-5 mr-1" />
-                        {scholarship.applicants} applicants
+                        Balance: {scholarship.balance.toLocaleString()} Wei
                     </div>
                     </div>
+                    <div className="flex items-center space-x-4 text-gray-600 mb-4">
+                  <div className="flex items-center">
+                      <Clock className="h-5 w-5 mr-1" />
+                      {new Date(scholarship.deadline).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center">
+                    <Users className="h-5 w-5 mr-1" />
+                    {scholarship.applicants} applicants
+                  </div>
+                </div>
                     <p className="text-gray-600 mb-4">{scholarship.description}</p>
                     <div className="mb-6">
                     <h3 className="font-semibold mb-2">Requirements:</h3>
@@ -98,12 +108,20 @@ const ManageScholarships: React.FC = () => {
                         ))}
                     </ul>
                     <div className="flex justify-end">
-                    <button
-                        onClick={() => handleDelete(scholarship.id)}
-                        className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-colors"
-                    >
-                        Delete
-                    </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => handleOpenFundsModal(scholarship.id)}
+                                className="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+                            >
+                                Add Funds
+                            </button>
+                            <button
+                                onClick={() => handleDelete(scholarship.id)}
+                                className="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -112,6 +130,13 @@ const ManageScholarships: React.FC = () => {
             </div>
         )}
     </div>
+    {fundsModalScholarshipId && (
+        <AddFundsModal
+          scholarshipId={fundsModalScholarshipId}
+          onClose={() => setFundsModalScholarshipId(null)}
+          onFundsAdded={fetchScholarships}
+        />
+      )}
     </div>
   );
 };
