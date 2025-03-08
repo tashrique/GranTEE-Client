@@ -8,10 +8,13 @@ interface ApplicationWithScholarship {
   scholarship?: Scholarship;
 }
 
-interface Application{
-  scholarshipId: number;
-  paid: boolean;
-  dataHash: string;
+type ApplicationStatus = 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected';
+
+interface Application {
+    exists: boolean;
+    paid: boolean;
+    dataHash: string;
+    status: ApplicationStatus;
 }
 
 export function Applications() {

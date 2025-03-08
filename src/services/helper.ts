@@ -13,10 +13,14 @@ interface ApplicationData{
     essay: string;
 }
 
-interface Application{
+type ApplicationStatus = 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected';
+
+interface Application {
     scholarshipId: number;
+    exists: boolean;
     paid: boolean;
     dataHash: string;
+    status: ApplicationStatus;
 }
 
 // Wallet Connection

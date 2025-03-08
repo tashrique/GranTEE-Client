@@ -15,11 +15,21 @@ contract GranTEE {
     // Because Scholarship contains an internal mapping, we store them in a mapping keyed by an auto-incremented ID.
     mapping(uint => Scholarship) public scholarships;
 
-    // Each application stores if the student applied, if they've been paid, and data hash of any details they provided.
+    // Enum for application status.
+    enum ApplicationStatus {
+        Pending,
+        Reviewed,
+        Accepted,
+        Rejected
+    }
+
+    // Each application now stores if the student applied, if they've been paid, data hash of any details they provided,
+    // and the current application status.
     struct Application {
         bool exists;
         bool paid;
         string dataHash;
+        ApplicationStatus status;
     }
 
     // Mapping from scholarship ID to a student's application.
@@ -33,6 +43,14 @@ contract GranTEE {
         uint scholarshipId;
         address creator;
         uint balance;
+    }
+
+    // Struct for returning a student's application details.
+    struct ApplicationView {
+        uint scholarshipId;
+        string dataHash;
+        bool paid;
+        ApplicationStatus status;
     }
 
     // Events for logging actions.
@@ -58,6 +76,11 @@ contract GranTEE {
         uint scholarshipId,
         address indexed student,
         uint amount
+    );
+    event ApplicationStatusUpdated(
+        uint scholarshipId,
+        address indexed student,
+        ApplicationStatus status
     );
 
     // Modifier to ensure the scholarship exists.
@@ -162,6 +185,7 @@ contract GranTEE {
         app.exists = true;
         app.paid = false;
         app.dataHash = _dataHash;
+        app.status = ApplicationStatus.Pending;
         studentApplications[msg.sender].push(_scholarshipId);
         emit ApplicationSubmitted(_scholarshipId, msg.sender, _dataHash);
     }
@@ -186,20 +210,31 @@ contract GranTEE {
         );
 
         app.paid = true;
+        app.status = ApplicationStatus.Accepted;
         scholarships[_scholarshipId].balance -= _amount;
         _student.transfer(_amount);
         emit ScholarshipSent(_scholarshipId, _student, _amount);
     }
 
-    // Struct for returning a student's application details.
-    struct ApplicationView {
-        uint scholarshipId;
-        string dataHash;
-        bool paid;
+    /// @notice Update the status of a student's application.
+    /// Only fund managers of the scholarship can update the application status.
+    function updateApplicationStatus(
+        uint _scholarshipId,
+        address _student,
+        ApplicationStatus _newStatus
+    )
+        external
+        scholarshipExists(_scholarshipId)
+        onlyFundManager(_scholarshipId)
+    {
+        Application storage app = applications[_scholarshipId][_student];
+        require(app.exists, "Application does not exist");
+        app.status = _newStatus;
+        emit ApplicationStatusUpdated(_scholarshipId, _student, _newStatus);
     }
 
     /// @notice Get all applications submitted by the caller.
-    /// @return An array of ApplicationView structs containing the scholarship ID, details, and payment status.
+    /// @return An array of ApplicationView structs containing the scholarship ID, details, payment status, and status.
     function getUserApplications()
         external
         view
@@ -215,7 +250,8 @@ contract GranTEE {
             result[i] = ApplicationView({
                 scholarshipId: schId,
                 dataHash: app.dataHash,
-                paid: app.paid
+                paid: app.paid,
+                status: app.status
             });
         }
         return result;
