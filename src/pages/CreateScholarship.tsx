@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../Web3Context';
-
-export interface Scholarship {
-    title: string;
-    description: string;
-    amount: string;
-    deadline: string;
-    link: string;
-    eligibility: string;
-  }
+import { Scholarship } from '../types';
 
 const CreateScholarship: React.FC = () => {
   const { account } = useWeb3();
   const [scholarship, setScholarship] = useState<Scholarship>({
+    id: '',
     title: '',
     description: '',
-    amount: '',
+    amount: 0,
     deadline: '',
-    link: '',
-    eligibility: '',
+    applicants: 0,
+    requirements: [],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,12 +31,13 @@ const CreateScholarship: React.FC = () => {
 
     // Reset the form
     setScholarship({
-      title: '',
-      description: '',
-      amount: '',
-      deadline: '',
-      link: '',
-      eligibility: '',
+        id: '',
+        title: '',
+        description: '',
+        amount: 0,
+        deadline: '',
+        applicants: 0,
+        requirements: [],
     });
   };
 
@@ -130,33 +124,16 @@ const CreateScholarship: React.FC = () => {
         {/* Eligibility */}
         <div>
           <label htmlFor="eligibility" className="block mb-1 font-medium">
-            Eligibility Criteria
+            Requirements
           </label>
           <input
             id="eligibility"
             name="eligibility"
             type="text"
-            value={scholarship.eligibility}
+            value={scholarship.requirements}
             onChange={handleChange}
             className="w-full border border-gray-300 px-3 py-2 rounded"
             placeholder="e.g., Must be a full-time student"
-            required
-          />
-        </div>
-
-        {/* Link */}
-        <div>
-          <label htmlFor="link" className="block mb-1 font-medium">
-            More Information Link
-          </label>
-          <input
-            id="link"
-            name="link"
-            type="url"
-            value={scholarship.link}
-            onChange={handleChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded"
-            placeholder="https://example.com"
             required
           />
         </div>
