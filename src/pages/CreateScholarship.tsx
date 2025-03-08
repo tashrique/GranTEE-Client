@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../Web3Context';
 import { Scholarship } from '../types';
+import { createScholarship } from '../services/helper';
 
 const CreateScholarship: React.FC = () => {
   const { account } = useWeb3();
@@ -8,7 +9,7 @@ const CreateScholarship: React.FC = () => {
     id: '',
     title: '',
     description: '',
-    amount: 0,
+    maxAmountPerApplicant: 0,
     deadline: '',
     applicants: 0,
     requirements: [],
@@ -19,7 +20,30 @@ const CreateScholarship: React.FC = () => {
     setScholarship((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+    // Handle changes for the requirements array
+    const handleRequirementChange = (index: number, value: string) => {
+        const newRequirements = [...scholarship.requirements];
+        newRequirements[index] = value;
+        setScholarship(prev => ({ ...prev, requirements: newRequirements }));
+    };
+    
+    // Add a new empty requirement
+    const addRequirement = () => {
+        setScholarship(prev => ({
+            ...prev,
+            requirements: [...prev.requirements, ''],
+        }));
+    };
+
+    // Remove a requirement by its index
+    const removeRequirement = (index: number) => {
+        setScholarship(prev => ({
+            ...prev,
+            requirements: prev.requirements.filter((_, i) => i !== index),
+        }));
+    };    
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Here we store the scholarship data in localStorage as an example.
     // In production, you'd likely send this to a backend or blockchain.
@@ -34,11 +58,17 @@ const CreateScholarship: React.FC = () => {
         id: '',
         title: '',
         description: '',
-        amount: 0,
+        maxAmountPerApplicant: 0,
         deadline: '',
         applicants: 0,
         requirements: [],
     });
+
+    try{
+        await createScholarship();
+    }catch(error){
+        console.log("Error creating scholarship: ", error);
+    }
   };
 
     // If no wallet is connected, show a message
@@ -91,13 +121,13 @@ const CreateScholarship: React.FC = () => {
         {/* Amount */}
         <div>
           <label htmlFor="amount" className="block mb-1 font-medium">
-            Amount
+            Max Amount Per Applicant
           </label>
           <input
             id="amount"
             name="amount"
             type="text"
-            value={scholarship.amount}
+            value={scholarship.maxAmountPerApplicant}
             onChange={handleChange}
             className="w-full border border-gray-300 px-3 py-2 rounded"
             placeholder="e.g., $1000"
@@ -121,21 +151,34 @@ const CreateScholarship: React.FC = () => {
           />
         </div>
 
-        {/* Eligibility */}
         <div>
-          <label htmlFor="eligibility" className="block mb-1 font-medium">
-            Requirements
-          </label>
-          <input
-            id="eligibility"
-            name="eligibility"
-            type="text"
-            value={scholarship.requirements}
-            onChange={handleChange}
-            className="w-full border border-gray-300 px-3 py-2 rounded"
-            placeholder="e.g., Must be a full-time student"
-            required
-          />
+          <label className="block mb-1 font-medium">Requirements</label>
+          {scholarship.requirements.map((req, index) => (
+            <div key={index} className="flex items-center space-x-2 mb-2">
+              <input
+                type="text"
+                value={req}
+                onChange={(e) => handleRequirementChange(index, e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded"
+                placeholder="Enter requirement"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => removeRequirement(index)}
+                className="text-red-500"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addRequirement}
+            className="text-blue-600 underline"
+          >
+            Add Requirement
+          </button>
         </div>
 
         <button
