@@ -1,5 +1,4 @@
 import { granTEEContract } from "./GranTEE.ts";
-import { createHash } from 'crypto';
 
 const GRANTEE_CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 
@@ -122,8 +121,7 @@ export async function deleteScholarship(scholarshipId: number): Promise<void> {
 export async function applyScholarship(scholarshipId: number, data: ApplicationData): Promise<void> {
     
     const jsonData = JSON.stringify(data);
-    const dataHash = createHash('sha256').update(jsonData).digest('hex');
-
+    const dataHash = await hashData(jsonData);
     try{
         await granTEEContract.applyScholarship(scholarshipId,dataHash)
     } catch(error){
@@ -135,3 +133,18 @@ export async function getApplications(): Promise<Application[]> {
     const applications: Application[] = await granTEEContract.getUserApplications();
     return applications;
 }
+
+async function hashData(data: string): Promise<string> {
+    // Encode the input string as an ArrayBuffer
+    const encoder = new TextEncoder();
+    const dataBuffer = encoder.encode(data);
+    
+    // Compute the SHA-256 digest
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+  
+    // Convert the ArrayBuffer to a hex string
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    return hashHex;
+  }
