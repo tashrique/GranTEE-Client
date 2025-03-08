@@ -15,11 +15,11 @@ contract GranTEE {
     // Because Scholarship contains an internal mapping, we store them in a mapping keyed by an auto-incremented ID.
     mapping(uint => Scholarship) private scholarships;
 
-    // Each application stores if the student applied, if they've been paid, and any details they provided.
+    // Each application stores if the student applied, if they've been paid, and data hash of any details they provided.
     struct Application {
         bool exists;
         bool paid;
-        string details;
+        string dataHash;
     }
 
     // Mapping from scholarship ID to a student's application.
@@ -52,7 +52,7 @@ contract GranTEE {
     event ApplicationSubmitted(
         uint scholarshipId,
         address indexed student,
-        string details
+        string dataHash
     );
     event ScholarshipSent(
         uint scholarshipId,
@@ -152,18 +152,18 @@ contract GranTEE {
         emit ScholarshipDeleted(_scholarshipId, msg.sender, refundAmount);
     }
 
-    /// @notice Apply to a specific scholarship with provided details.
+    /// @notice Apply to a specific scholarship with provided data hash of the details.
     function applyScholarship(
         uint _scholarshipId,
-        string calldata _details
+        string calldata _dataHash
     ) external scholarshipExists(_scholarshipId) {
         Application storage app = applications[_scholarshipId][msg.sender];
         require(!app.exists, "Already applied to this scholarship");
         app.exists = true;
         app.paid = false;
-        app.details = _details;
+        app.dataHash = _dataHash;
         studentApplications[msg.sender].push(_scholarshipId);
-        emit ApplicationSubmitted(_scholarshipId, msg.sender, _details);
+        emit ApplicationSubmitted(_scholarshipId, msg.sender, _dataHash);
     }
 
     /// @notice Send scholarship funds from a specific scholarship to an applied student.
@@ -194,13 +194,13 @@ contract GranTEE {
     // Struct for returning a student's application details.
     struct ApplicationView {
         uint scholarshipId;
-        string details;
+        string dataHash;
         bool paid;
     }
 
     /// @notice Get all applications submitted by the caller.
     /// @return An array of ApplicationView structs containing the scholarship ID, details, and payment status.
-    function getMyApplications()
+    function getUserApplications()
         external
         view
         returns (ApplicationView[] memory)
@@ -214,7 +214,7 @@ contract GranTEE {
             Application storage app = applications[schId][msg.sender];
             result[i] = ApplicationView({
                 scholarshipId: schId,
-                details: app.details,
+                dataHash: app.dataHash,
                 paid: app.paid
             });
         }
@@ -223,7 +223,7 @@ contract GranTEE {
 
     /// @notice Get a list of all existing scholarships.
     /// @return An array of ScholarshipView structs for all scholarships that exist.
-    function getAllScholarships()
+    function getActiveScholarships()
         external
         view
         returns (ScholarshipView[] memory)
