@@ -47,7 +47,7 @@ export function Applications() {
   }, []);
 
   const getStatus = (paid: boolean) => {
-    return paid ? "Granted" : "Pending";
+    return paid ? "Sent" : "Not Paid";
   };
 
   return (
@@ -73,7 +73,10 @@ export function Applications() {
                 {item.scholarship ? new Date(item.scholarship.deadline).toLocaleDateString() : "N/A"}
               </p>
               <p>
-                <strong>Status:</strong> {getStatus(item.application.paid)}
+                <strong>Status:</strong> {item.application.status}
+              </p>
+              <p>
+                <strong>Payment Status:</strong> {getStatus(item.application.paid)}
               </p>
             </div>
           ))}

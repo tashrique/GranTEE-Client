@@ -46,7 +46,7 @@ export function Scholarships() {
                   {scholarship.title}
                 </h2>
                 <div className="flex items-center space-x-4 text-gray-600 mb-4">
-                  By: ${scholarship.creator}
+                  By: {scholarship.creator}
                 </div>
                 <div className="flex items-center space-x-4 text-gray-600 mb-4">
                   <div className="flex items-center">
