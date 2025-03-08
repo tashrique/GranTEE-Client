@@ -5,6 +5,8 @@ import { Scholarships } from './pages/Scholarships.tsx';
 import { Apply } from './pages/Apply.tsx';
 import { Status } from './pages/Status.tsx';
 import { Web3Provider } from './Web3Context.tsx';
+import Profile from './pages/Profile.tsx';
+import CreateScholarship from './pages/CreateScholarship.tsx';
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/apply/:scholarshipId" element={<Apply />} />
           <Route path="/status" element={<Status />} />
+          <Route path="/profile" element={<Profile/>} />
+          <Route path="/create-scholarship" element={<CreateScholarship />} />
+          <Route path="*" element={<div>Not Found</div>} />
         </Routes>
       </div>
     </Web3Provider>
