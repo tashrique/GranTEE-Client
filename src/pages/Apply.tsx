@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Github, Linkedin, Twitter, DollarSign, Clock, Users } from 'lucide-react';
-
-interface Scholarship {
-  id: string;
-  title: string;
-  amount: number;
-  deadline: string;
-  applicants: number;
-  description: string;
-  requirements: string[];
-}
+import { DollarSign, Clock, Users } from 'lucide-react';
+import { Scholarship } from '../types';
 
 const scholarships: Scholarship[] = [
   {
@@ -62,12 +53,6 @@ export function Apply() {
   const navigate = useNavigate();
   const [essay, setEssay] = useState('');
   const [scholarship, setScholarship] = useState<Scholarship | null>(null);
-  const [socialConnections, setSocialConnections] = useState({
-    github: false,
-    linkedin: false,
-    twitter: false,
-    google: false,
-  });
 
   useEffect(() => {
     if (scholarshipId) {
@@ -82,17 +67,10 @@ export function Apply() {
     }
   }, [scholarshipId, navigate]);
 
-  const handleSocialConnect = (platform: keyof typeof socialConnections) => {
-    setSocialConnections(prev => ({
-      ...prev,
-      [platform]: true
-    }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log('Form submitted:', { scholarshipId, essay, socialConnections });
+    console.log('Form submitted:', { scholarshipId, essay });
   };
 
   if (!scholarship) {
@@ -132,65 +110,6 @@ export function Apply() {
           </div>
         </div>
         
-        {/* Social Connections */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Connect Your Accounts</h2>
-          <p className="text-gray-600 mb-6">
-            Connect your social accounts to strengthen your application. This helps us verify your identity and achievements.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button
-              onClick={() => handleSocialConnect('google')}
-              className={`p-4 rounded-lg border ${
-                socialConnections.google ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
-              } flex flex-col items-center justify-center transition-colors`}
-            >
-              <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" 
-                   alt="Google" 
-                   className="h-6 object-contain mb-2" />
-              <span className="text-sm">
-                {socialConnections.google ? 'Connected' : 'Connect Google'}
-              </span>
-            </button>
-            
-            <button
-              onClick={() => handleSocialConnect('github')}
-              className={`p-4 rounded-lg border ${
-                socialConnections.github ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
-              } flex flex-col items-center justify-center transition-colors`}
-            >
-              <Github className="h-6 w-6 mb-2" />
-              <span className="text-sm">
-                {socialConnections.github ? 'Connected' : 'Connect GitHub'}
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleSocialConnect('linkedin')}
-              className={`p-4 rounded-lg border ${
-                socialConnections.linkedin ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
-              } flex flex-col items-center justify-center transition-colors`}
-            >
-              <Linkedin className="h-6 w-6 mb-2" />
-              <span className="text-sm">
-                {socialConnections.linkedin ? 'Connected' : 'Connect LinkedIn'}
-              </span>
-            </button>
-
-            <button
-              onClick={() => handleSocialConnect('twitter')}
-              className={`p-4 rounded-lg border ${
-                socialConnections.twitter ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
-              } flex flex-col items-center justify-center transition-colors`}
-            >
-              <Twitter className="h-6 w-6 mb-2" />
-              <span className="text-sm">
-                {socialConnections.twitter ? 'Connected' : 'Connect Twitter'}
-              </span>
-            </button>
-          </div>
-        </div>
-
         {/* Application Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Scholarship Essay</h2>

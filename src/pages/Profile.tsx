@@ -1,0 +1,191 @@
+import React, { useEffect, useState } from 'react';
+import { useWeb3 } from '../Web3Context';
+import {Github, Linkedin, Twitter,} from 'lucide-react';
+
+interface ProfileData {
+  twitter: string;
+  linkedIn: string;
+  github: string;
+  google: string;
+}
+
+const Profile: React.FC = () => {
+  const { account } = useWeb3();
+  const [profile, setProfile] = useState<ProfileData>({
+    twitter: '',
+    linkedIn: '',
+    github: '',
+    google: '',
+  });
+
+  const [socialConnections, setSocialConnections] = useState({
+      github: false,
+      linkedin: false,
+      twitter: false,
+      google: false,
+    });
+
+  // If a user is connected, load existing profile data from localStorage
+  useEffect(() => {
+    if (account) {
+      const storedProfile = localStorage.getItem(`profile-${account}`);
+      if (storedProfile) {
+        setProfile(JSON.parse(storedProfile));
+      }
+    }
+  }, [account]);
+
+  // Handle form changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
+
+   const handleSocialConnect = (platform: keyof typeof socialConnections) => {
+      setSocialConnections(prev => ({
+        ...prev,
+        [platform]: true
+      }));
+    };
+
+  // Save profile data to localStorage (or call an API to save on the backend)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!account) {
+      alert('Please connect your wallet first.');
+      return;
+    }
+    localStorage.setItem(`profile-${account}`, JSON.stringify(profile));
+    alert('Profile saved!');
+  };
+
+  // If no wallet is connected, show a message
+  if (!account) {
+    return (
+      <div className="max-w-xl mx-auto p-4">
+        <h1 className="text-xl font-bold mb-4">Profile</h1>
+        <p>Please connect your wallet to view or edit your profile.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-xl mx-auto p-4">
+      <h1 className="text-xl font-bold mb-4">Profile</h1>
+      <p className="mb-4">Wallet Address: {account}</p>
+      {/* Social Connections */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Connect Your Accounts</h2>
+          <p className="text-gray-600 mb-6">
+            Connect your social accounts to strengthen your application. This helps us verify your identity and achievements.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button
+              onClick={() => handleSocialConnect('google')}
+              className={`p-4 rounded-lg border ${
+                socialConnections.google ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
+              } flex flex-col items-center justify-center transition-colors`}
+            >
+              <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" 
+                   alt="Google" 
+                   className="h-6 object-contain mb-2" />
+              <span className="text-sm">
+                {socialConnections.google ? 'Connected' : 'Connect Google'}
+              </span>
+            </button>
+            
+            <button
+              onClick={() => handleSocialConnect('github')}
+              className={`p-4 rounded-lg border ${
+                socialConnections.github ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
+              } flex flex-col items-center justify-center transition-colors`}
+            >
+              <Github className="h-6 w-6 mb-2" />
+              <span className="text-sm">
+                {socialConnections.github ? 'Connected' : 'Connect GitHub'}
+              </span>
+            </button>
+
+            <button
+              onClick={() => handleSocialConnect('linkedin')}
+              className={`p-4 rounded-lg border ${
+                socialConnections.linkedin ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
+              } flex flex-col items-center justify-center transition-colors`}
+            >
+              <Linkedin className="h-6 w-6 mb-2" />
+              <span className="text-sm">
+                {socialConnections.linkedin ? 'Connected' : 'Connect LinkedIn'}
+              </span>
+            </button>
+
+            <button
+              onClick={() => handleSocialConnect('twitter')}
+              className={`p-4 rounded-lg border ${
+                socialConnections.twitter ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
+              } flex flex-col items-center justify-center transition-colors`}
+            >
+              <Twitter className="h-6 w-6 mb-2" />
+              <span className="text-sm">
+                {socialConnections.twitter ? 'Connected' : 'Connect Twitter'}
+              </span>
+            </button>
+          </div>
+        </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="twitter" className="block mb-1">Twitter</label>
+          <input
+            type="text"
+            id="twitter"
+            name="twitter"
+            value={profile.twitter}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-3 py-2 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="linkedIn" className="block mb-1">LinkedIn</label>
+          <input
+            type="text"
+            id="linkedIn"
+            name="linkedIn"
+            value={profile.linkedIn}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-3 py-2 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="github" className="block mb-1">GitHub</label>
+          <input
+            type="text"
+            id="github"
+            name="github"
+            value={profile.github}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-3 py-2 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="google" className="block mb-1">Google</label>
+          <input
+            type="text"
+            id="google"
+            name="google"
+            value={profile.google}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-3 py-2 rounded"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Save
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default Profile;
