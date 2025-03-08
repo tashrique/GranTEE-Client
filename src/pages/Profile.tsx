@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useWeb3 } from '../Web3Context';
 import {Github, Linkedin, Twitter,} from 'lucide-react';
 
@@ -71,7 +72,15 @@ const Profile: React.FC = () => {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Profile</h1>
+      <div className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold">Profile</h1>
+                <Link
+                  to="/manage-scholarships"
+                  className="border-2 border-blue-600 border-dotted text-blue-600 px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition-colors"
+                >
+                  Creator Dashboard
+                </Link>
+              </div>
       <p className="mb-4">Wallet Address: {account}</p>
       {/* Social Connections */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
