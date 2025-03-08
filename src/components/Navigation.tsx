@@ -35,7 +35,7 @@ export function Navigation() {
           <Link to="/scholarships" className="text-gray-600 hover:text-blue-600 transition-colors">
             Scholarships
           </Link>
-          <Link to="/status" className="text-gray-600 hover:text-blue-600 transition-colors">
+          <Link to="/applications" className="text-gray-600 hover:text-blue-600 transition-colors">
             Applications
           </Link>
 

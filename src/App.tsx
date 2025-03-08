@@ -3,7 +3,7 @@ import { Navigation } from './components/Navigation.tsx';
 import { Home } from './pages/Home.tsx';
 import { Scholarships } from './pages/Scholarships.tsx';
 import { Apply } from './pages/Apply.tsx';
-import { Status } from './pages/Status.tsx';
+import { Applications } from './pages/Applications.tsx';
 import { Web3Provider } from './Web3Context.tsx';
 import Profile from './pages/Profile.tsx';
 import CreateScholarship from './pages/CreateScholarship.tsx';
@@ -18,7 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/scholarships" element={<Scholarships />} />
           <Route path="/apply/:scholarshipId" element={<Apply />} />
-          <Route path="/status" element={<Status />} />
+          <Route path="/applications" element={<Applications />} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/create-scholarship" element={<CreateScholarship />} />
           <Route path="/manage-scholarships" element={<ManageScholarships/>} />

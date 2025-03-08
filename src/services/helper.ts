@@ -10,15 +10,7 @@ interface ScholarshipResp {
 }
 
 interface ApplicationData{
-    name: string;
-    location: string;
-    age: string;
     essay: string;
-    resume: string;
-    linkedIn: string;
-    github: string;
-    google: string;
-    twitter: string;
 }
 
 interface Application{

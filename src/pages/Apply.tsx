@@ -1,52 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { DollarSign, Clock, Users } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { Scholarship } from '../types';
-
-const scholarships: Scholarship[] = [
-  {
-    id: 'tech-innovation-2025',
-    title: 'Technology Innovation Scholarship',
-    maxAmountPerApplicant: 10000,
-    deadline: '2025-06-30',
-    applicants: 156,
-    description: 'For students pursuing innovative technology projects and research in AI, blockchain, or quantum computing.',
-    requirements: [
-      'Minimum GPA of 3.5',
-      'Major in Computer Science, Engineering, or related field',
-      'Demonstrated experience in innovative tech projects',
-      'Strong academic record'
-    ]
-  },
-  {
-    id: 'future-leaders-2025',
-    title: 'Future Leaders in Tech',
-    maxAmountPerApplicant: 15000,
-    deadline: '2025-07-15',
-    applicants: 203,
-    description: 'Supporting aspiring tech leaders who demonstrate exceptional leadership potential and community impact.',
-    requirements: [
-      'Leadership experience in tech communities',
-      'Open source contributions',
-      'Community involvement',
-      'Strong academic standing'
-    ]
-  },
-  {
-    id: 'diversity-tech-2025',
-    title: 'Diversity in Tech Scholarship',
-    maxAmountPerApplicant: 12000,
-    deadline: '2025-08-01',
-    applicants: 178,
-    description: 'Promoting diversity and inclusion in technology fields by supporting underrepresented groups.',
-    requirements: [
-      'Member of underrepresented group in tech',
-      'Demonstrated academic excellence',
-      'Community involvement',
-      'Tech-related major'
-    ]
-  }
-];
+import { applyScholarship, getScholarshipById } from '../services/helper';
 
 export function Apply() {
   const { scholarshipId } = useParams();
@@ -56,20 +12,34 @@ export function Apply() {
 
   useEffect(() => {
     if (scholarshipId) {
-      const found = scholarships.find(s => s.id === scholarshipId);
-      if (found) {
-        setScholarship(found);
-      } else {
-        navigate('/scholarships');
-      }
+      fetchScholarship();
     } else {
       navigate('/scholarships');
     }
   }, [scholarshipId, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchScholarship = async () => {
+    try {
+      const found = await getScholarshipById(Number(scholarshipId));
+      if (found) {
+        setScholarship(found);
+      } else {
+        navigate('/scholarships');
+      }
+    } catch (error) {
+      console.error('Error fetching scholarship:', error);
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
+    try{
+      await applyScholarship(Number(scholarshipId), {essay:essay});
+    }
+    catch(error){
+      console.log("Error: ",error);
+    }
     console.log('Form submitted:', { scholarshipId, essay });
   };
 
@@ -87,8 +57,10 @@ export function Apply() {
           <h2 className="text-2xl font-semibold mb-2">{scholarship.title}</h2>
           <div className="flex items-center space-x-4 text-gray-600 mb-4">
             <div className="flex items-center">
-              <DollarSign className="h-5 w-5 mr-1" />
-              ${scholarship.maxAmountPerApplicant.toLocaleString()}
+                Max grant: {scholarship.maxAmountPerApplicant.toLocaleString()} Wei
+            </div>
+            <div className="flex items-center">
+                Balance: {scholarship.balance.toLocaleString()} Wei
             </div>
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-1" />
