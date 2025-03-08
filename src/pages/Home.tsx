@@ -43,7 +43,7 @@ export function Home() {
               The first decentralized scholarship platform powered by Trusted Execution Environment (TEE) technology
             </p>
             <Link
-              to="/apply"
+              to="/profile"
               className="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors inline-flex items-center"
             >
               Start Your Application <ChevronRight className="ml-2 h-5 w-5" />
@@ -146,17 +146,17 @@ export function Home() {
         </p>
         <div className="flex justify-center space-x-4">
           <Link
-            to="/apply"
+            to="/profile"
             className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors"
           >
             Start Application
           </Link>
-          <Link
+          {/* <Link
             to="/status"
             className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors"
           >
             Check Status
-          </Link>
+          </Link> */}
         </div>
       </div>
 
