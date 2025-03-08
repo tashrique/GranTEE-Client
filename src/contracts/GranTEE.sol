@@ -13,7 +13,7 @@ contract GranTEE {
     }
 
     // Because Scholarship contains an internal mapping, we store them in a mapping keyed by an auto-incremented ID.
-    mapping(uint => Scholarship) public scholarships;
+    mapping(uint => Scholarship) private scholarships;
 
     // Each application stores if the student applied, if they've been paid, and any details they provided.
     struct Application {
@@ -27,6 +27,13 @@ contract GranTEE {
 
     // To allow students to view all the scholarships they've applied to.
     mapping(address => uint[]) private studentApplications;
+
+    // Struct for returning a summary of scholarship data.
+    struct ScholarshipView {
+        uint scholarshipId;
+        address creator;
+        uint balance;
+    }
 
     // Events for logging actions.
     event ScholarshipCreated(uint scholarshipId, address indexed creator);
@@ -212,6 +219,61 @@ contract GranTEE {
             });
         }
         return result;
+    }
+
+    /// @notice Get a list of all existing scholarships.
+    /// @return An array of ScholarshipView structs for all scholarships that exist.
+    function getAllScholarships()
+        external
+        view
+        returns (ScholarshipView[] memory)
+    {
+        uint count = 0;
+        for (uint i = 1; i <= scholarshipCounter; i++) {
+            if (scholarships[i].exists) {
+                count++;
+            }
+        }
+        ScholarshipView[] memory list = new ScholarshipView[](count);
+        uint index = 0;
+        for (uint i = 1; i <= scholarshipCounter; i++) {
+            if (scholarships[i].exists) {
+                list[index] = ScholarshipView(
+                    i,
+                    scholarships[i].creator,
+                    scholarships[i].balance
+                );
+                index++;
+            }
+        }
+        return list;
+    }
+
+    /// @notice Get a list of all existing scholarships created by a specific creator.
+    /// @param _creator The address of the scholarship creator.
+    /// @return An array of ScholarshipView structs for scholarships created by _creator.
+    function getScholarshipsByCreator(
+        address _creator
+    ) external view returns (ScholarshipView[] memory) {
+        uint count = 0;
+        for (uint i = 1; i <= scholarshipCounter; i++) {
+            if (scholarships[i].exists && scholarships[i].creator == _creator) {
+                count++;
+            }
+        }
+        ScholarshipView[] memory list = new ScholarshipView[](count);
+        uint index = 0;
+        for (uint i = 1; i <= scholarshipCounter; i++) {
+            if (scholarships[i].exists && scholarships[i].creator == _creator) {
+                list[index] = ScholarshipView(
+                    i,
+                    scholarships[i].creator,
+                    scholarships[i].balance
+                );
+                index++;
+            }
+        }
+        return list;
     }
 
     // Fallback functions to receive Ether in case funds are sent directly.
