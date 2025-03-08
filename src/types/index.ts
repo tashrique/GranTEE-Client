@@ -1,7 +1,7 @@
 export interface Scholarship {
     id: string;
     title: string;
-    amount: number;
+    maxAmountPerApplicant: number;
     deadline: string;
     applicants: number;
     description: string;

@@ -7,7 +7,7 @@ const scholarships: Scholarship[] = [
   {
     id: 'tech-innovation-2025',
     title: 'Technology Innovation Scholarship',
-    amount: 10000,
+    maxAmountPerApplicant: 10000,
     deadline: '2025-06-30',
     applicants: 156,
     description: 'For students pursuing innovative technology projects and research in AI, blockchain, or quantum computing.',
@@ -21,7 +21,7 @@ const scholarships: Scholarship[] = [
   {
     id: 'future-leaders-2025',
     title: 'Future Leaders in Tech',
-    amount: 15000,
+    maxAmountPerApplicant: 15000,
     deadline: '2025-07-15',
     applicants: 203,
     description: 'Supporting aspiring tech leaders who demonstrate exceptional leadership potential and community impact.',
@@ -35,7 +35,7 @@ const scholarships: Scholarship[] = [
   {
     id: 'diversity-tech-2025',
     title: 'Diversity in Tech Scholarship',
-    amount: 12000,
+    maxAmountPerApplicant: 12000,
     deadline: '2025-08-01',
     applicants: 178,
     description: 'Promoting diversity and inclusion in technology fields by supporting underrepresented groups.',
@@ -88,7 +88,7 @@ export function Apply() {
           <div className="flex items-center space-x-4 text-gray-600 mb-4">
             <div className="flex items-center">
               <DollarSign className="h-5 w-5 mr-1" />
-              ${scholarship.amount.toLocaleString()}
+              ${scholarship.maxAmountPerApplicant.toLocaleString()}
             </div>
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-1" />

@@ -1,8 +1,9 @@
 import { granTEEContract } from "./GranTEE.ts";
+import { Scholarship } from "../types";
 
 const GRANTEE_CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 
-interface Scholarship {
+interface ScholarshipResp {
     scholarshipId: number;
     creator: string;
     balance: string;
@@ -61,21 +62,37 @@ export function setupAccountChangeListener(
 }
 
 export async function getScholarships(): Promise<Scholarship[]> {
-    const scholarships: Scholarship[] = await granTEEContract.getActiveScholarships();
-    // const activeScholarships : Scholarship[]= []; 
-    // scholarships.forEach((scholarship) => {
-    //     activeScholarships.push({
-    //         id: scholarship.id.toNumber(),
-    //         creator: scholarship.creator,
-    //         balance: ethers.formatEther(scholarship.balance)
-    //     });
-    // });
-    return scholarships;
+    const processedScholarships: Scholarship[] = [];
+    const scholarships: ScholarshipResp[] = await granTEEContract.getActiveScholarships();
+    scholarships.forEach((resp) => {
+        processedScholarships.push({
+          id: resp.scholarshipId+"",
+          title: "",
+          description: "",
+          maxAmountPerApplicant: Number(resp.balance),
+          deadline: "",
+          applicants: 0,
+          requirements: [],
+        });
+      });
+    return processedScholarships;
 }
 
 export async function getScholarshipsByCreator(creator: string): Promise<Scholarship[]> {
-    const scholarships: Scholarship[] = await granTEEContract.getScholarshipsByCreator(creator);
-    return scholarships;
+    const processedScholarships: Scholarship[] = [];
+    const scholarships: ScholarshipResp[] = await granTEEContract.getScholarshipsByCreator(creator);
+    scholarships.forEach((resp) => {
+        processedScholarships.push({
+          id: resp.scholarshipId+"",
+          title: "",
+          description: "",
+          maxAmountPerApplicant: Number(resp.balance),
+          deadline: "",
+          applicants: 0,
+          requirements: [],
+        });
+      });
+    return processedScholarships;
 }
 
 export async function createScholarship(): Promise<void> {
