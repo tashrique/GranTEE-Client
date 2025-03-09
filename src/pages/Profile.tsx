@@ -407,7 +407,7 @@ const Profile: React.FC = () => {
       setProfileCompletionPercent(newCompletionPercentage);
       
     }, 2000);
-  };
+    };
 
   // Save profile data to localStorage (or call an API to save on the backend)
   const handleSubmit = async (e: React.FormEvent) => {
@@ -420,7 +420,7 @@ const Profile: React.FC = () => {
     const saveToastId = showLoadingToast("Saving your profile data... This will just take a moment");
     
     try {
-      await uploadUserData(profile);
+    await uploadUserData(profile);
       updateToast(saveToastId, "success", "Profile saved successfully! Your information has been securely stored.");
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -489,13 +489,13 @@ const Profile: React.FC = () => {
             <Award className="mr-2 h-5 w-5" />
             Browse Scholarships
           </Link>
-          <Link
-            to="/manage-scholarships"
-            className="border-2 border-blue-600 border-dotted text-blue-600 px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition-colors"
-          >
-            Creator Dashboard
-          </Link>
-        </div>
+                <Link
+                  to="/manage-scholarships"
+                  className="border-2 border-blue-600 border-dotted text-blue-600 px-8 py-4 rounded-full font-bold hover:bg-blue-50 transition-colors"
+                >
+                  Creator Dashboard
+                </Link>
+              </div>
       </div>
       
       {/* Profile completion status */}
@@ -824,90 +824,90 @@ const Profile: React.FC = () => {
         <div className="pt-4">
           <h3 className="font-medium mb-3">Social Profiles</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="twitter" className="block mb-1">Twitter</label>
+        <div>
+          <label htmlFor="twitter" className="block mb-1">Twitter</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Twitter className="h-4 w-4 text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  id="twitter"
-                  name="twitter"
-                  value={profile.twitter}
-                  onChange={handleChange}
+          <input
+            type="text"
+            id="twitter"
+            name="twitter"
+            value={profile.twitter}
+            onChange={handleChange}
                   placeholder="@username"
                   className="w-full border border-gray-300 px-3 py-2 pl-10 rounded"
-                />
-              </div>
+          />
+        </div>
             </div>
             
-            <div>
-              <label htmlFor="linkedIn" className="block mb-1">LinkedIn</label>
+        <div>
+          <label htmlFor="linkedIn" className="block mb-1">LinkedIn</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Linkedin className="h-4 w-4 text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  id="linkedIn"
-                  name="linkedIn"
-                  value={profile.linkedIn}
-                  onChange={handleChange}
+          <input
+            type="text"
+            id="linkedIn"
+            name="linkedIn"
+            value={profile.linkedIn}
+            onChange={handleChange}
                   placeholder="linkedin.com/in/username"
                   className="w-full border border-gray-300 px-3 py-2 pl-10 rounded"
-                />
-              </div>
+          />
+        </div>
             </div>
             
-            <div>
-              <label htmlFor="github" className="block mb-1">GitHub</label>
+        <div>
+          <label htmlFor="github" className="block mb-1">GitHub</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Github className="h-4 w-4 text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  id="github"
-                  name="github"
-                  value={profile.github}
-                  onChange={handleChange}
+          <input
+            type="text"
+            id="github"
+            name="github"
+            value={profile.github}
+            onChange={handleChange}
                   placeholder="github.com/username"
                   className="w-full border border-gray-300 px-3 py-2 pl-10 rounded"
-                />
-              </div>
+          />
+        </div>
             </div>
             
-            <div>
-              <label htmlFor="google" className="block mb-1">Google</label>
+        <div>
+          <label htmlFor="google" className="block mb-1">Google</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" 
                        alt="Google" 
                        className="h-4 object-contain" />
                 </div>
-                <input
-                  type="text"
-                  id="google"
-                  name="google"
-                  value={profile.google}
-                  onChange={handleChange}
+          <input
+            type="text"
+            id="google"
+            name="google"
+            value={profile.google}
+            onChange={handleChange}
                   placeholder="Google account"
                   className="w-full border border-gray-300 px-3 py-2 pl-10 rounded"
-                />
+          />
               </div>
             </div>
           </div>
         </div>
         
         <div className="pt-4 flex items-center justify-between">
-          <button
-            type="submit"
+        <button
+          type="submit"
             className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 flex items-center"
-          >
+        >
             <CheckCircle className="mr-2 h-5 w-5" />
             Save Profile
-          </button>
+        </button>
           
           <Link
             to="/scholarships"

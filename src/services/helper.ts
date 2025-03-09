@@ -330,13 +330,33 @@ export async function deleteScholarship(scholarshipId: number | string): Promise
 }
 
 export async function applyScholarship(scholarshipId: number, data: ApplicationData): Promise<void> {
-    
-    const jsonData = JSON.stringify(data);
-    const dataHash = await hashData(jsonData);
-    try{
-        granTEEContract.applyScholarship(scholarshipId,dataHash)
-    } catch(error){
-        throw new Error("Couldn't apply for scholarship, error: "+error)
+    // First check if user has already applied
+    try {
+        const applications = await getApplications();
+        const hasAlreadyApplied = applications.some(app => app.scholarshipId === scholarshipId);
+        
+        if (hasAlreadyApplied) {
+            throw new Error("Already applied to this scholarship. Please check your applications page.");
+        }
+
+        const jsonData = JSON.stringify(data);
+        const dataHash = await hashData(jsonData);
+        try {
+            await granTEEContract.applyScholarship(scholarshipId, dataHash);
+        } catch(error) {
+            // Check if error message contains indication of already applied
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage.toLowerCase().includes('already applied') || 
+                errorMessage.toLowerCase().includes('application exists')) {
+                throw new Error("Already applied to this scholarship. Please check your applications page.");
+            }
+            throw new Error(`Couldn't apply for scholarship, error: ${errorMessage}`);
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error; // Re-throw if it's already our custom error
+        }
+        throw new Error(`Error in application process: ${error}`);
     }
 }
 
