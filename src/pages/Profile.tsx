@@ -4,6 +4,7 @@ import { useWeb3 } from '../Web3Context';
 import {Github, Linkedin, Twitter,} from 'lucide-react';
 import { getUserData, uploadUserData } from '../services/helper';
 import { UserProfile } from '../types';
+import { toast } from 'react-toastify';
 
 const Profile: React.FC = () => {
   const { account } = useWeb3();
@@ -32,12 +33,15 @@ const Profile: React.FC = () => {
       return
     }
     try{
+      toast.info("Loading your profile data...");
       const userProfile = await getUserData();
       if (userProfile) {
         setProfile(userProfile);
+        toast.success("Profile data loaded successfully");
       }
     }catch(error){
       console.log("Error fetching user data: ",error)
+      toast.error(`Error loading profile: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -52,17 +56,36 @@ const Profile: React.FC = () => {
         ...prev,
         [platform]: true
       }));
+      toast.success(`Connected to ${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
     };
 
   // Save profile data to localStorage (or call an API to save on the backend)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account) {
-      alert('Please connect your wallet first.');
+      toast.error('Please connect your wallet first.');
       return;
     }
-    await uploadUserData(profile);
-    alert('Profile saved!');
+    
+    const saveToast = toast.loading("Saving profile data...");
+    
+    try {
+      await uploadUserData(profile);
+      toast.update(saveToast, {
+        render: "Profile saved successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000
+      });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.update(saveToast, {
+        render: `Error saving profile: ${error instanceof Error ? error.message : String(error)}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000
+      });
+    }
   };
 
   // If no wallet is connected, show a message

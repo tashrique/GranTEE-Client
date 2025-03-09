@@ -4,6 +4,7 @@ import { Clock, Users } from 'lucide-react';
 import { useWeb3 } from '../Web3Context';
 import { Scholarship } from '../types';
 import { applyScholarship, getScholarshipById, invokeAgent } from '../services/helper';
+import { toast } from 'react-toastify';
 
 export function Apply() {
   const { account } = useWeb3();
@@ -22,40 +23,77 @@ export function Apply() {
 
   const fetchScholarship = async () => {
     try {
+      toast.info("Loading scholarship details...");
       const found = await getScholarshipById(Number(scholarshipId));
       if (found) {
         setScholarship(found);
+        toast.success("Scholarship details loaded");
       } else {
+        toast.error("Scholarship not found");
         navigate('/scholarships');
       }
     } catch (error) {
       console.error('Error fetching scholarship:', error);
+      toast.error(`Error loading scholarship: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    try{
-      applyScholarship(Number(scholarshipId), {essay:essay});
-    }
-    catch(error){
-      console.log("Error: ",error);
-    }
-    console.log('Form submitted:', { scholarshipId, essay });
+    
+    // Create a loading toast that we'll update throughout the process
+    const applicationToast = toast.loading("Submitting your application...");
+    
+    try {
+      // Apply for scholarship
+      await applyScholarship(Number(scholarshipId), {essay:essay});
+      toast.update(applicationToast, {
+        render: "Application submitted successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: false // Keep this visible while the agent processes
+      });
+      
+      console.log('Form submitted:', { scholarshipId, essay });
 
-    try{
-      console.log("Invoking agent....")
-      invokeAgent(
+      // Invoke agent for processing
+      toast.update(applicationToast, {
+        render: "Processing your application...",
+        type: "info",
+        isLoading: true
+      });
+      
+      console.log("Invoking agent....");
+      await invokeAgent(
         Number(scholarshipId),
         {essay:essay},
         account?account:""
-      )
-    } catch(error){
-      console.log("Error invoking agent: ",error)
+      );
+      
+      toast.update(applicationToast, {
+        render: "Application processed successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 5000
+      });
+      
+      // Clear the essay field
+      setEssay("");
+      
+      // Add a small delay before navigating
+      setTimeout(() => {
+        navigate('/applications');
+      }, 2000);
+      
+    } catch(error) {
+      console.log("Error: ", error);
+      toast.update(applicationToast, {
+        render: `Error submitting application: ${error instanceof Error ? error.message : String(error)}`,
+        type: "error",
+        isLoading: false,
+        autoClose: 5000
+      });
     }
-
-    setEssay("");
   };
 
   if (!account) {
