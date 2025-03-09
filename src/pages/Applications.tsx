@@ -34,10 +34,10 @@ enum ApplicationStatus {
 }
 
 interface Application {
-  exists: boolean;
-  paid: boolean;
-  dataHash: string;
-  status: ApplicationStatus;
+    exists: boolean;
+    paid: boolean;
+    dataHash: string;
+    status: ApplicationStatus;
   scholarshipId: number;
 }
 
@@ -52,17 +52,17 @@ export function Applications() {
     approved: 0,
     rejected: 0
   });
-  
+
   useEffect(() => {
     if (account) {
       fetchData();
     }
   }, [account]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const applications = await getApplications();
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const applications = await getApplications();
       
       const applicationsWithScholarships: ApplicationWithScholarship[] = [];
       
@@ -106,12 +106,12 @@ export function Applications() {
       };
       
       setTabCounts(counts);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const filteredApplications = applicationsWithScholarships.filter((item) => {
     if (activeTab === 'all') {
@@ -514,8 +514,8 @@ export function Applications() {
             ) : (
               <div className="grid grid-cols-1 gap-6 animate-fadeIn">
                 {filteredApplications.map((item, index) => renderApplicationCard(item, index))}
-              </div>
-            )}
+        </div>
+      )}
           </>
         )}
       </div>
