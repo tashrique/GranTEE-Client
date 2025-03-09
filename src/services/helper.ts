@@ -231,10 +231,20 @@ export async function applyScholarship(scholarshipId: number, data: ApplicationD
     const jsonData = JSON.stringify(data);
     const dataHash = await hashData(jsonData);
     try{
-        await granTEEContract.applyScholarship(scholarshipId,dataHash)
+        granTEEContract.applyScholarship(scholarshipId,dataHash)
     } catch(error){
         throw new Error("Couldn't apply for scholarship, error: "+error)
     }
+}
+
+export async function invokeAgent(scholarshipId: number, data: ApplicationData, walletAddress: string): Promise<void> {
+    const requestData = {
+        wallet_address: walletAddress,
+        scholarshipId: scholarshipId,
+        application_data: data,
+      };
+      const postResponse = await axios.post(`${API_URL}/apply`, requestData);
+      console.log("POST Response:", postResponse.data);
 }
 
 export async function getApplications(): Promise<Application[]> {

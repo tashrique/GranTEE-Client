@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Users } from 'lucide-react';
+import { useWeb3 } from '../Web3Context';
 import { Scholarship } from '../types';
-import { applyScholarship, getScholarshipById } from '../services/helper';
+import { applyScholarship, getScholarshipById, invokeAgent } from '../services/helper';
 
 export function Apply() {
+  const { account } = useWeb3();
   const { scholarshipId } = useParams();
   const navigate = useNavigate();
   const [essay, setEssay] = useState('');
@@ -35,13 +37,30 @@ export function Apply() {
     e.preventDefault();
     // Handle form submission
     try{
-      await applyScholarship(Number(scholarshipId), {essay:essay});
+      applyScholarship(Number(scholarshipId), {essay:essay});
     }
     catch(error){
       console.log("Error: ",error);
     }
     console.log('Form submitted:', { scholarshipId, essay });
+
+    try{
+      console.log("Invoking agent....")
+      invokeAgent(
+        Number(scholarshipId),
+        {essay:essay},
+        account?account:""
+      )
+    } catch(error){
+      console.log("Error invoking agent: ",error)
+    }
+
+    setEssay("");
   };
+
+  if (!account) {
+    return null;
+  }
 
   if (!scholarship) {
     return null;
@@ -51,7 +70,6 @@ export function Apply() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Scholarship Application</h1>
-
         {/* Scholarship Details */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-2">{scholarship.title}</h2>
