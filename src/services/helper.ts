@@ -1,12 +1,20 @@
 import { granTEEContract } from "./GranTEE.ts";
-import { Scholarship } from "../types";
+import { Scholarship, UserProfile } from "../types";
+import axios from "axios";
 
 const GRANTEE_CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface ScholarshipResp {
     scholarshipId: number;
     creator: string;
     balance: string;
+}
+
+interface uploadUserDataRequest {
+    wallet_address: string;
+    signature: string;
+    data: string;
 }
 
 interface ApplicationData{
@@ -167,6 +175,56 @@ export async function getApplications(): Promise<Application[]> {
     return applications;
 }
 
+export async function uploadUserData(data: UserProfile): Promise<void> {
+    try {
+        const walletAddress = await getCurrentAccount();
+        if (!walletAddress) {
+          throw new Error("Wallet not connected");
+        }
+        const signer = await granTEEContract.getSigner();
+        const message = JSON.stringify(data);
+        const signature = await signer.signMessage(message);
+        const requestData: uploadUserDataRequest = {
+          wallet_address: walletAddress,
+          signature,
+          data: message,
+        };
+        const postResponse = await axios.post(`${API_URL}/user`, requestData);
+        console.log("POST Response:", postResponse.data);
+      } catch (error) {
+        console.error("Error in POST user data:", error);
+      }
+}
+
+export async function getUserData(): Promise<UserProfile> {
+    let userProfile: UserProfile = {
+        github:"",
+        linkedIn:"",
+        google:"",
+        twitter:"",
+    }
+    try {
+        const walletAddress = await getCurrentAccount();
+        if (!walletAddress) {
+          throw new Error("Wallet not connected");
+        }
+
+        const signer = await granTEEContract.getSigner();
+        const message = walletAddress.toLowerCase();
+        const signature = await signer.signMessage(message);
+
+        const getResponse = await axios.get(`${API_URL}/user/${walletAddress}`, {
+          params: {
+            signature: signature
+          }
+        });
+        userProfile=getResponse.data.data;
+      } catch (error) {
+        console.error("Error in GET user data:", error);
+      }
+      return userProfile;
+}
+
 async function hashData(data: string): Promise<string> {
     // Encode the input string as an ArrayBuffer
     const encoder = new TextEncoder();
@@ -180,4 +238,4 @@ async function hashData(data: string): Promise<string> {
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     
     return hashHex;
-  }
+}

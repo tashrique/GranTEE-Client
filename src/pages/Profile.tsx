@@ -2,17 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWeb3 } from '../Web3Context';
 import {Github, Linkedin, Twitter,} from 'lucide-react';
-
-interface ProfileData {
-  twitter: string;
-  linkedIn: string;
-  github: string;
-  google: string;
-}
+import { getUserData, uploadUserData } from '../services/helper';
+import { UserProfile } from '../types';
 
 const Profile: React.FC = () => {
   const { account } = useWeb3();
-  const [profile, setProfile] = useState<ProfileData>({
+  const [profile, setProfile] = useState<UserProfile>({
     twitter: '',
     linkedIn: '',
     github: '',
@@ -21,20 +16,30 @@ const Profile: React.FC = () => {
 
   const [socialConnections, setSocialConnections] = useState({
       github: false,
-      linkedin: false,
+      linkedIn: false,
       twitter: false,
       google: false,
     });
 
   // If a user is connected, load existing profile data from localStorage
   useEffect(() => {
-    if (account) {
-      const storedProfile = localStorage.getItem(`profile-${account}`);
-      if (storedProfile) {
-        setProfile(JSON.parse(storedProfile));
-      }
-    }
+    fetchUserData();
   }, [account]);
+
+  const fetchUserData = async()=>{
+    if(!account){
+      console.log("Please connect wallet!!!")
+      return
+    }
+    try{
+      const userProfile = await getUserData();
+      if (userProfile) {
+        setProfile(userProfile);
+      }
+    }catch(error){
+      console.log("Error fetching user data: ",error)
+    }
+  }
 
   // Handle form changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,13 +55,13 @@ const Profile: React.FC = () => {
     };
 
   // Save profile data to localStorage (or call an API to save on the backend)
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account) {
       alert('Please connect your wallet first.');
       return;
     }
-    localStorage.setItem(`profile-${account}`, JSON.stringify(profile));
+    await uploadUserData(profile);
     alert('Profile saved!');
   };
 
@@ -116,14 +121,14 @@ const Profile: React.FC = () => {
             </button>
 
             <button
-              onClick={() => handleSocialConnect('linkedin')}
+              onClick={() => handleSocialConnect('linkedIn')}
               className={`p-4 rounded-lg border ${
-                socialConnections.linkedin ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
+                socialConnections.linkedIn ? 'bg-green-50 border-green-500' : 'border-gray-200 hover:border-blue-500'
               } flex flex-col items-center justify-center transition-colors`}
             >
               <Linkedin className="h-6 w-6 mb-2" />
               <span className="text-sm">
-                {socialConnections.linkedin ? 'Connected' : 'Connect LinkedIn'}
+                {socialConnections.linkedIn ? 'Connected' : 'Connect LinkedIn'}
               </span>
             </button>
 

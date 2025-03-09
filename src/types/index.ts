@@ -8,4 +8,11 @@ export interface Scholarship {
     requirements: string[];
     balance: number;
     creator: string;
-  }
+}
+
+export interface UserProfile {
+  twitter: string;
+  github: string;
+  linkedIn: string;
+  google: string;
+}
