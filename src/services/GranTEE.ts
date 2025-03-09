@@ -155,6 +155,11 @@ export class GrantTEEContract {
         if (!this.contract) throw new Error("Contract not initialized");
         return await this.contract.scholarshipCounter();
     }
+
+    async getFundManagers(scholarshipId: number){
+        if (!this.contract) throw new Error("Contract not initialized");
+        return await this.contract.getFundManagers(scholarshipId);
+    }
 }
 
 export const granTEEContract = new GrantTEEContract();

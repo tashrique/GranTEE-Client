@@ -209,6 +209,15 @@ export async function removeFundManager(scholarshipId: number, fundManager: stri
     }
 }
 
+export async function getFundManagers(scholarshipId: number): Promise<string[]>{
+    try{
+        const fundManagers = await granTEEContract.getFundManagers(scholarshipId);
+        return fundManagers;
+    } catch(error){
+        throw new Error("Couldn't remove fund manager, error: "+error)
+    }
+}
+
 export async function deleteScholarship(scholarshipId: number): Promise<void> {
     try{
         await granTEEContract.deleteScholarship(scholarshipId)

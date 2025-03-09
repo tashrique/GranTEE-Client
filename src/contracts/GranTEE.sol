@@ -4,12 +4,14 @@ pragma solidity ^0.8.0;
 contract GranTEE {
     uint public scholarshipCounter;
 
-    // Each scholarship is stored with its creator, balance, existence flag, and a mapping of fund managers.
+    // Each scholarship is stored with its creator, balance, existence flag,
+    // a mapping of fund managers, and an array to track them.
     struct Scholarship {
         address creator;
         uint balance;
         bool exists;
         mapping(address => bool) fundManagers;
+        address[] fundManagerList;
     }
 
     // Because Scholarship contains an internal mapping, we store them in a mapping keyed by an auto-incremented ID.
@@ -129,7 +131,10 @@ contract GranTEE {
         address _manager
     ) external scholarshipExists(_scholarshipId) onlyCreator(_scholarshipId) {
         require(_manager != address(0), "Invalid address");
-        scholarships[_scholarshipId].fundManagers[_manager] = true;
+        if (!scholarships[_scholarshipId].fundManagers[_manager]) {
+            scholarships[_scholarshipId].fundManagers[_manager] = true;
+            scholarships[_scholarshipId].fundManagerList.push(_manager);
+        }
         emit FundManagerAdded(_scholarshipId, _manager);
     }
 
@@ -143,6 +148,7 @@ contract GranTEE {
             "Address is not a fund manager"
         );
         scholarships[_scholarshipId].fundManagers[_manager] = false;
+        // Note: The address remains in fundManagerList but is filtered out in getFundManagers.
         emit FundManagerRemoved(_scholarshipId, _manager);
     }
 
@@ -310,6 +316,37 @@ contract GranTEE {
             }
         }
         return list;
+    }
+
+    /// @notice Get the list of current fund managers for a given scholarship.
+    /// @param _scholarshipId The scholarship ID.
+    /// @return An array of addresses that are currently active fund managers.
+    function getFundManagers(
+        uint _scholarshipId
+    )
+        external
+        view
+        scholarshipExists(_scholarshipId)
+        returns (address[] memory)
+    {
+        Scholarship storage s = scholarships[_scholarshipId];
+        uint activeCount = 0;
+        // Count the active fund managers.
+        for (uint i = 0; i < s.fundManagerList.length; i++) {
+            if (s.fundManagers[s.fundManagerList[i]]) {
+                activeCount++;
+            }
+        }
+        address[] memory activeManagers = new address[](activeCount);
+        uint j = 0;
+        // Collect only the active fund managers.
+        for (uint i = 0; i < s.fundManagerList.length; i++) {
+            if (s.fundManagers[s.fundManagerList[i]]) {
+                activeManagers[j] = s.fundManagerList[i];
+                j++;
+            }
+        }
+        return activeManagers;
     }
 
     // Fallback functions to receive Ether in case funds are sent directly.
