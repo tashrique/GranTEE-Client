@@ -398,7 +398,7 @@ export function Home() {
                 Revolutionizing scholarship allocation through blockchain technology and AI consensus.
               </p>
               <div className="mt-4 text-sm bg-blue-900 bg-opacity-30 rounded-lg p-3 border border-blue-800 inline-block">
-                <span className="font-semibold text-blue-400">Flare Hackathon 2023</span>
+                <span className="font-semibold text-blue-400">Flare Hackathon 5</span>
               </div>
             </div>
             <div>
