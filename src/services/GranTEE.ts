@@ -55,11 +55,8 @@ export class GrantTEEContract {
     // create scholarship
     async createScholarship(){
         if (!this.contract) throw new Error("Contract not initialized");
-            const transaction = await this.contract.createScholarship();
-            const receipt = await transaction.wait();
-        if (receipt.status !== 1) {
-            throw new Error("Transaction failed");
-        }
+        const transaction = await this.contract.createScholarship();
+        const receipt = await transaction.wait();
         return receipt;
     }
 
@@ -152,6 +149,11 @@ export class GrantTEEContract {
     async getScholarshipById(scholarshipId: number) {
         if (!this.contract) throw new Error("Contract not initialized");
         return await this.contract.scholarships(scholarshipId);
+    }
+
+    async getCounter(){
+        if (!this.contract) throw new Error("Contract not initialized");
+        return await this.contract.scholarshipCounter();
     }
 }
 

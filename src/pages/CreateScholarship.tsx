@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../Web3Context';
 import { Scholarship } from '../types';
-import { createScholarship } from '../services/helper';
+import { createScholarship, uploadScholarshipData } from '../services/helper';
 
 const CreateScholarship: React.FC = () => {
   const { account } = useWeb3();
@@ -70,6 +70,7 @@ const CreateScholarship: React.FC = () => {
 
     try{
         await createScholarship();
+        uploadScholarshipData(scholarship)
     }catch(error){
         console.log("Error creating scholarship: ", error);
     }

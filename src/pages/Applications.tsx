@@ -8,7 +8,12 @@ interface ApplicationWithScholarship {
   scholarship?: Scholarship;
 }
 
-type ApplicationStatus = 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected';
+enum ApplicationStatus {
+  Pending = 0,
+  Approved = 1,
+  Rejected = 2,
+  Cancelled = 3,
+}
 
 interface Application {
     exists: boolean;
@@ -73,7 +78,7 @@ export function Applications() {
                 {item.scholarship ? new Date(item.scholarship.deadline).toLocaleDateString() : "N/A"}
               </p>
               <p>
-                <strong>Status:</strong> {item.application.status}
+                <strong>Status:</strong> {ApplicationStatus[item.application.status]}
               </p>
               <p>
                 <strong>Payment Status:</strong> {getStatus(item.application.paid)}
