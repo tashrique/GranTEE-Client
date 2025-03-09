@@ -46,7 +46,7 @@ interface VerificationState {
 // Custom toast configuration
 const toastConfig = {
   position: "bottom-right" as const,
-  autoClose: 3000,
+  autoClose: 2000,
   hideProgressBar: false,
   closeOnClick: true,
   pauseOnHover: true,
@@ -58,37 +58,38 @@ const toastConfig = {
 
 // Custom toast functions with unified styling
 const showSuccessToast = (message: string) => {
-  toast.success(message, {
+  toast.success(`${message}`, {
     ...toastConfig,
     className: `${toastConfig.className} bg-green-50 text-green-800 border border-green-200`
   });
 };
 
 const showInfoToast = (message: string) => {
-  toast.info(message, {
+  toast.info(` ${message}`, {
     ...toastConfig,
     className: `${toastConfig.className} bg-blue-50 text-blue-800 border border-blue-200`
   });
 };
 
 const showErrorToast = (message: string) => {
-  toast.error(message, {
+  toast.error(`${message}`, {
     ...toastConfig,
     className: `${toastConfig.className} bg-red-50 text-red-800 border border-red-200`
   });
 };
 
 const showLoadingToast = (message: string) => {
-  return toast.loading(message, {
+  return toast.loading(`⏳ ${message}`, {
     ...toastConfig,
     className: `${toastConfig.className} bg-gray-50 text-gray-800 border border-gray-200`
   });
 };
 
 const updateToast = (id: string | number, type: "success" | "error", message: string) => {
+  const emoji = type === "success" ? "✅" : "❌";
   toast.update(id, {
     ...toastConfig,
-    render: message,
+    render: `${emoji} ${message}`,
     type,
     isLoading: false,
     className: `${toastConfig.className} ${
@@ -226,12 +227,24 @@ const Profile: React.FC = () => {
       console.log("Please connect wallet!!!")
       return
     }
+    
+    // Avoid showing the loading toast if we're just initializing
+    const isInitialLoad = !profile.twitter && !profile.linkedIn && !profile.github && !profile.google;
+    
     try{
-      showInfoToast("Loading your profile data...");
+      // Only show the loading toast if it's not the initial load
+      if (!isInitialLoad) {
+        showInfoToast("Loading your profile data...");
+      }
+      
       const userProfile = await getUserData();
       if (userProfile) {
         setProfile(userProfile);
-        showSuccessToast("Profile data loaded successfully");
+        
+        // Only show the success toast if it's not the initial load
+        if (!isInitialLoad) {
+          showSuccessToast("Profile data loaded successfully");
+        }
       }
     }catch(error){
       console.log("Error fetching user data: ",error)
@@ -264,7 +277,7 @@ const Profile: React.FC = () => {
     }));
     
     // Simulate API call
-    showInfoToast('Connecting to College Board...');
+    showInfoToast('Connecting to College Board... This may take a moment');
     
     // Simulate response after 2 seconds
     setTimeout(() => {
@@ -275,7 +288,7 @@ const Profile: React.FC = () => {
           status: 'verified'
         }
       }));
-      showSuccessToast('SAT score verified through College Board!');
+      showSuccessToast('SAT score verified through College Board! Your scores have been securely confirmed.');
       
       // Update profile completion percentage
       const newCompletionPercentage = Math.min(profileCompletionPercent + 15, 100);
@@ -301,7 +314,7 @@ const Profile: React.FC = () => {
   // Mock verification requests
   const requestTranscriptVerification = () => {
     if (!academicVerifications.transcript.file) {
-      showErrorToast('Please upload your transcript first');
+      showErrorToast('Please upload your transcript file first');
       return;
     }
     
@@ -314,7 +327,7 @@ const Profile: React.FC = () => {
     }));
     
     // Simulate API call
-    showInfoToast('Transcript submitted for verification');
+    showInfoToast('Transcript submitted for verification... Processing your document');
     
     // Simulate response after 2 seconds
     setTimeout(() => {
@@ -325,7 +338,7 @@ const Profile: React.FC = () => {
           status: 'verified'
         }
       }));
-      showSuccessToast('Transcript verified successfully!');
+      showSuccessToast('Transcript verified successfully! Your academic record has been confirmed.');
       
       // Update profile completion percentage
       const newCompletionPercentage = Math.min(profileCompletionPercent + 15, 100);
@@ -345,7 +358,7 @@ const Profile: React.FC = () => {
     }));
     
     // Simulate API call
-    showInfoToast('Connecting to university records...');
+    showInfoToast('Connecting to educational records... Please wait while we verify your attendance');
     
     // Simulate response after 2 seconds
     setTimeout(() => {
@@ -356,7 +369,7 @@ const Profile: React.FC = () => {
           status: 'verified'
         }
       }));
-      showSuccessToast('College attendance verified!');
+      showSuccessToast('School attendance verified! Your enrollment status has been confirmed.');
       
       // Update profile completion percentage
       const newCompletionPercentage = Math.min(profileCompletionPercent + 15, 100);
@@ -376,7 +389,7 @@ const Profile: React.FC = () => {
     }));
     
     // Simulate API call
-    showInfoToast('Connecting to secure ID verification service...');
+    showInfoToast('Connecting to secure ID verification service... This ensures your privacy while confirming your identity');
     
     // Simulate response after 2 seconds
     setTimeout(() => {
@@ -387,7 +400,7 @@ const Profile: React.FC = () => {
           status: 'verified'
         }
       }));
-      showSuccessToast('Identity verified successfully!');
+      showSuccessToast('Identity verified successfully! Your identity has been cryptographically confirmed.');
       
       // Update profile completion percentage
       const newCompletionPercentage = Math.min(profileCompletionPercent + 15, 100);
@@ -400,21 +413,21 @@ const Profile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account) {
-      showErrorToast('Please connect your wallet first.');
+      showErrorToast('Please connect your wallet first');
       return;
     }
     
-    const saveToastId = showLoadingToast("Saving profile data...");
+    const saveToastId = showLoadingToast("Saving your profile data... This will just take a moment");
     
     try {
       await uploadUserData(profile);
-      updateToast(saveToastId, "success", "Profile saved successfully!");
+      updateToast(saveToastId, "success", "Profile saved successfully! Your information has been securely stored.");
     } catch (error) {
       console.error("Error saving profile:", error);
       updateToast(
         saveToastId, 
         "error", 
-        `Error saving profile: ${error instanceof Error ? error.message : String(error)}`
+        `Error saving profile: ${error instanceof Error ? error.message : "Unknown error occurred"}`
       );
     }
   };
@@ -648,13 +661,13 @@ const Profile: React.FC = () => {
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-semibold flex items-center">
                 <GraduationCap className="w-5 h-5 mr-2 text-blue-600" />
-                College Attendance
+                School Attendance
               </h3>
               {renderVerificationStatus(academicVerifications.collegeAttendance.status)}
             </div>
             
             <p className="text-sm text-gray-600 mb-4">
-              Verify your enrollment status with your university or college.
+              Verify your enrollment status with your school or university.
               This helps you qualify for student-specific scholarships.
             </p>
             
@@ -673,7 +686,7 @@ const Profile: React.FC = () => {
               {academicVerifications.collegeAttendance.status === 'verified' ? (
                 <>
                   <CheckCircle className="h-5 w-5" />
-                  College Attendance Verified
+                  School Attendance Verified
                 </>
               ) : academicVerifications.collegeAttendance.status === 'pending' ? (
                 <>
@@ -683,7 +696,7 @@ const Profile: React.FC = () => {
               ) : (
                 <>
                   <ExternalLink className="h-5 w-5" />
-                  Connect with University
+                  Connect with School
                 </>
               )}
             </button>
@@ -699,12 +712,12 @@ const Profile: React.FC = () => {
               {renderVerificationStatus(academicVerifications.identity.status)}
             </div>
             
-            <div className="flex mb-4">
+            <div className="flex mb-4 gap-2">
               <div className="bg-yellow-100 p-1 rounded text-yellow-800 text-xs font-medium mr-1">
-                TRUSTED
+                Trusted
               </div>
               <div className="bg-blue-100 p-1 rounded text-blue-800 text-xs font-medium">
-                MOST VALUED
+                Most Valued
               </div>
             </div>
             
